@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Power BI Embed</title>
+  <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.18.5/dist/powerbi.js"></script>
+</head>
+<body>
+  <h2>Embedded Power BI Report</h2>
+  <div id="reportContainer" style="height:600px"></div>
+
+  <script>
+    // Embed configuration
+    var embedConfig = {
+      type: 'report',
+      id: '<Your-Report-ID>',
+      embedUrl: '<Your-Embed-URL>',
+      accessToken: '<Your-Embed-or-AAD-Access-Token>',
+      tokenType: models.TokenType.Embed, // or .Aad for AAD access token
+      settings: {
+        filterPaneEnabled: true,
+        navContentPaneEnabled: true
+      }
+    };
+
+    // Initialize the Power BI report
+    var reportContainer = document.getElementById('reportContainer');
+    var report = powerbi.embed(reportContainer, embedConfig);
+
+    // Apply a report-level filter dynamically
+    report.on("loaded", function () {
+      var filter = {
+        $schema: "http://powerbi.com/product/schema#basic",
+        target: {
+          table: "YourTableName",
+          column: "YourColumnName"
+        },
+        operator: "In",
+        values: ["Value1", "Value2"]
+      };
+
+      report.updateFilters(models.FiltersOperations.Replace, [filter])
+        .then(() => console.log("Filter applied"))
+        .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>
